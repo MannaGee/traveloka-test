@@ -1,6 +1,7 @@
 variable "repository_name" {
   description = "The name of the ECR repository"
   type        = string
+  default = "gha-test-repo"
 }
 
 variable "tags" {
@@ -32,5 +33,24 @@ variable "lifecycle_policy_rules" {
     count_number  = number
     action_type   = string
   }))
-  default = []
+  default = [
+    {
+      rule_priority = 1
+      description   = "Retain only the last 10 images"
+      tag_status    = "any"
+      count_type    = "imageCountMoreThan"
+      count_unit    = "images"
+      count_number  = 10
+      action_type   = "expire"
+    },
+    {
+      rule_priority = 2
+      description   = "Retain untagged images for 30 days"
+      tag_status    = "untagged"
+      count_type    = "sinceImagePushed"
+      count_unit    = "days"
+      count_number  = 30
+      action_type   = "expire"
+    }
+  ]
 }
