@@ -82,6 +82,7 @@ variable "use_fargate" {
 variable "task_definition" {
   description = "The task definition to use for the service"
   type        = string
+  default = "sample-task-def"
 }
 
 variable "desired_count" {
