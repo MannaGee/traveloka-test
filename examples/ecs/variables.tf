@@ -202,11 +202,16 @@ variable "memory" {
 variable "execution_role_arn" {
   description = "The ARN of the IAM role that allows your Amazon ECS container agent to make calls to the required AWS APIs on your behalf"
   type        = string
-  default = "default-role"
+  default = "arn:aws:iam::123456789012:role/execution-role"
 }
 
 variable "task_role_arn" {
   description = "The ARN of the IAM role that containers in this task can assume"
   type        = string
-  default = "default-role"
+  default = "arn:aws:iam::123456789012:role/task-role"
+}
+variable "managed_termination_protection" {
+  description = "Managed termination protection"
+  type        = string
+  default     = "DISABLED"
 }
