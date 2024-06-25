@@ -37,27 +37,10 @@ jobs:
         run: ls -la ./examples
 
       - name: List module1 directory contents
-        run: ls -la ./examples/ecr
+        run: ls -la ./examples/ecs
 
       
       - name: Initialize Terraform for ecr
-        working-directory: ./examples/ecr
-        run: terraform init
-
-      - name: Validate Terraform for ecr
-        working-directory: ./examples/ecr
-        run: terraform validate
-
-      - name: Plan Terraform for ecr
-        working-directory: ./examples/ecr
-        run: terraform plan
-
-      - name: Apply Terraform for ecr
-        if: github.ref == 'refs/heads/main'  # Only apply on push to main branch
-        working-directory: ./examples/ecr
-        run: terraform apply -auto-approve
-
-      - name: Initialize Terraform for ecs
         working-directory: ./examples/ecs
         run: terraform init
 
@@ -73,3 +56,4 @@ jobs:
         if: github.ref == 'refs/heads/main'  # Only apply on push to main branch
         working-directory: ./examples/ecs
         run: terraform apply -auto-approve
+
