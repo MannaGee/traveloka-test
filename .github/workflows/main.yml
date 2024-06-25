@@ -30,6 +30,16 @@ jobs:
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: us-east-1  # Specify your AWS region
 
+      - name: List root directory contents
+        run: ls -la
+
+      - name: List modules directory contents
+        run: ls -la ./examples
+
+      - name: List module1 directory contents
+        run: ls -la ./examples/ecr
+
+      
       - name: Initialize Terraform for ecr
         working-directory: ./examples/ecr
         run: terraform init
