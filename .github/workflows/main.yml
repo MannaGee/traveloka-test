@@ -12,6 +12,10 @@ jobs:
   terraform:
     name: Terraform Deploy
     runs-on: ubuntu-latest
+    
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
       - name: Checkout code
@@ -23,12 +27,11 @@ jobs:
           terraform_version: 1.8.5  # Specify the version of Terraform you are using
 
       - name: Configure AWS credentials
+        id: configure-aws-credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-          aws-region: us-east-1  # Specify your AWS region
+          role-to-assume: arn:aws:iam::339712743018:role/arq-oidc-gha
+          aws-region: us-east-1
 
       - name: List root directory contents
         run: ls -la
