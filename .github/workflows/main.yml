@@ -56,19 +56,12 @@ jobs:
           name: terraform-plan
           path: ./examples/ecs/plan.tfplan
 
-  approve:
-    name: Request Approval
-    needs: [terraform]
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Approval required
-        run: exit 1 echo "Please approve the plan to continue. Once approved, re-run the workflow from the 'Terraform Apply' job."
-
   apply:
     name: Terraform Apply
-    needs: [terraform]
     runs-on: ubuntu-latest
+    needs: [terraform]
+    environment:
+      name: production  # Environment name configured in GitHub settings
 
     permissions:
       id-token: write
