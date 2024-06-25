@@ -63,7 +63,7 @@ jobs:
 
     steps:
       - name: Approval required
-        run: echo "Please approve the plan to continue. Once approved, re-run the workflow from the 'Terraform Apply' job."
+        run: exit 1 echo "Please approve the plan to continue. Once approved, re-run the workflow from the 'Terraform Apply' job."
 
   apply:
     name: Terraform Apply
