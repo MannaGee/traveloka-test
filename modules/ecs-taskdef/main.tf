@@ -1,3 +1,15 @@
+provider "aws" {
+  region = "us-east-1"
+}
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = ">= 5.55.0" # or use a stable version if the latest has issues
+    }
+  }
+}
+
 resource "aws_ecs_task_definition" "custom_task_definition" {
   family                   = var.family
   container_definitions    = var.container_definitions

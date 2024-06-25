@@ -1,6 +1,13 @@
 provider "aws" {
-  region  = "us-east-1"
-  profile = "default"
+  region = "us-east-1"
+}
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = ">= 5.55.0" # or use a stable version if the latest has issues
+    }
+  }
 }
 
 resource "aws_ecs_cluster" "custom-ecs-cluster" {

@@ -1,3 +1,15 @@
+provider "aws" {
+  region = "us-east-1"
+}
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = ">= 5.55.0" # or use a stable version if the latest has issues
+    }
+  }
+}
+
 resource "aws_ecs_service" "custom_ecs_service" {
   name            = var.service_name
   cluster         = var.cluster_id
