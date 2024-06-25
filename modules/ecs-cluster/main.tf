@@ -74,7 +74,7 @@ resource "aws_ecs_capacity_provider" "ec2_provider" {
 
   name = "${var.cluster_name}-ec2-provider"
   auto_scaling_group_provider {
-    auto_scaling_group_arn = aws_autoscaling_group.custom-ecs-asg.arn
+    auto_scaling_group_arn = aws_autoscaling_group.custom-ecs-asg.arn[0]
     managed_scaling {
       maximum_scaling_step_size = var.maximum_scaling_step_size
       minimum_scaling_step_size = var.minimum_scaling_step_size
@@ -92,12 +92,12 @@ output "cluster_id" {
 
 output "ecs_cluster_name" {
   description = "The name of the ECS cluster"
-  value       = aws_ecs_cluster.ecs_cluster.name
+  value       = aws_ecs_cluster.custom-ecs-cluster.name
 }
 
 output "asg_id" {
   description = "The ID of the Auto Scaling Group"
-  value       = aws_autoscaling_group.ecs_asg[0].id
+  value       = aws_autoscaling_group.custom-ecs-asg[0].id
 }
 
 output "launch_template_id" {
