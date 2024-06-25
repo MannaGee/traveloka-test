@@ -74,7 +74,7 @@ resource "aws_ecs_capacity_provider" "ec2_provider" {
 
   name = "${var.cluster_name}-ec2-provider"
   auto_scaling_group_provider {
-    auto_scaling_group_arn = aws_autoscaling_group.custom-ecs-asg.arn[0]
+    auto_scaling_group_arn = aws_autoscaling_group.custom-ecs-asg[0].arn
     managed_scaling {
       maximum_scaling_step_size = var.maximum_scaling_step_size
       minimum_scaling_step_size = var.minimum_scaling_step_size
