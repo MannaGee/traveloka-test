@@ -31,16 +31,16 @@ resource "aws_launch_template" "ecs_instance_template" {
     name = var.iam_instance_profile
   }
 
-  user_data = base64encode(data.template_file.ecs_user_data.rendered)
+  # user_data = base64encode(data.template_file.ecs_user_data.rendered)
 
   lifecycle {
     create_before_destroy = true
   }
 }
 
-data "template_file" "ecs_user_data" {
-  template = file("${path.module}/ecs-user-data.sh")
-}
+# data "template_file" "ecs_user_data" {
+#   template = file("${path.module}/ecs-user-data.sh")
+# }
 
 
 # Auto Scaling Group
