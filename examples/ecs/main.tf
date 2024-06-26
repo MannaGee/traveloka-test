@@ -35,19 +35,19 @@ module "ecs_cluster" {
   health_check_grace_period   = var.health_check_grace_period
 }
 
-module "ecs_service" {
-  source             = "../../modules/ecs-service"
-  service_name       = var.service_name
-  container_name     = var.container_name
-  use_fargate        = var.use_fargate
-  cluster_id         = module.ecs_cluster.cluster_id
-  container_port     = var.container_port
-  security_group_ids = var.security_group_ids
-  task_definition    = module.ecs_task.task_definition_arn
-  subnet_ids         = var.subnet_ids
-  desired_count      = var.desired_count
-  target_group_arn   = var.target_group_arn   
-}
+# module "ecs_service" {
+#   source             = "../../modules/ecs-service"
+#   service_name       = var.service_name
+#   container_name     = var.container_name
+#   use_fargate        = var.use_fargate
+#   cluster_id         = module.ecs_cluster.cluster_id
+#   container_port     = var.container_port
+#   security_group_ids = var.security_group_ids
+#   task_definition    = module.ecs_task.task_definition_arn
+#   subnet_ids         = var.subnet_ids
+#   desired_count      = var.desired_count
+#   target_group_arn   = var.target_group_arn   
+# }
 
 module "ecs_task" {
   source                   = "../../modules/ecs-taskdef"

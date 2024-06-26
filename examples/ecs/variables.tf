@@ -107,7 +107,7 @@ variable "subnet_ids" {
 variable "security_group_ids" {
   description = "List of security group IDs for the ECS service"
   type        = list(string)
-  default = [ "	sg-067a85f23eb1ac35e" ]
+  default = [ "sg-0175633b9f5769284" ]
 }
 
 variable "assign_public_ip" {
