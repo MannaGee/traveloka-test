@@ -87,8 +87,11 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: terraform-plan
-          path: ./examples/ecs/plan.tfplan
+          path: ./examples/ecs
+
+      - name: List directory contents
+        run: ls -la ./examples/ecs
 
       - name: Apply Terraform for ecs
         working-directory: ./examples/ecs
-        run: terraform apply -auto-approve ./examples/ecs/plan.tfplan
+        run: terraform apply -auto-approve plan.tfplan
