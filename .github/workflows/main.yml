@@ -45,6 +45,12 @@ jobs:
           role-to-assume: arn:aws:iam::339712743018:role/arq-oidc-gha
           aws-region: us-east-1
 
+
+      - name: Clear Terraform Cache
+        run: |
+          rm -rf ~/.terraform.d
+          rm -rf .terraform
+          
       - name: Initialize Terraform for ecs
         working-directory: ./examples/ecs
         run: |
@@ -52,6 +58,11 @@ jobs:
           rm -rf .terraform.lock.hcl
           terraform init -upgrade -backend-config="bucket=arq-terraform-bucket" -backend-config="key=GHA/terraform.tfstate" -backend-config="region=us-east-1"
 
+      - name: Verify Terraform setup
+        run: |
+         terraform version
+         terraform providers
+         
       - name: Run TFLint
         working-directory: ./examples/ecs
         run: tflint --format=compact
@@ -104,7 +115,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: 1.8.5
+          terraform_version: 1.7.3
 
       - name: Configure AWS credentials
         id: configure-aws-credentials
@@ -131,6 +142,11 @@ jobs:
           name: terraform-cache
           path: ./examples/ecs/.terraform
 
+      - name: Clear Terraform Cache
+        run: |
+          rm -rf ~/.terraform.d
+          rm -rf .terraform
+          
       - name: Initialize Terraform for ecs
         working-directory: ./examples/ecs
         run: |
@@ -138,6 +154,11 @@ jobs:
           rm -rf .terraform.lock.hcl
           terraform init -upgrade -backend-config="bucket=arq-terraform-bucket" -backend-config="key=GHA/terraform.tfstate" -backend-config="region=us-east-1"
 
+      - name: Verify Terraform setup
+        run: |
+         terraform version
+         terraform providers
+         
       - name: Install AWS provider
         run: |
           mkdir -p ~/.terraform.d/plugins/registry.terraform.io/hashicorp/aws/5.55.0/linux_amd64
@@ -169,6 +190,7 @@ jobs:
           file .terraform/providers/registry.terraform.io/hashicorp/aws/5.55.0/linux_amd64/terraform-provider-aws_v5.55.0_x5
         working-directory: ./examples/ecs
 
-      - name: Apply Terraform for ecs
-        working-directory: ./examples/ecs
-        run: terraform apply -auto-approve 
+      - name: Terraform Apply
+        run: terraform apply -auto-approve -input=false -no-color
+        env:
+         TF_LOG: DEBUG
