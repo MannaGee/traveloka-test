@@ -4,14 +4,18 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'modules/ecs/**'
   pull_request:
     branches:
       - main
+    paths:
+      - 'modules/ecs/**'
   workflow_dispatch:
 
 jobs:
   terraform:
-    name: Terraform Apply
+    name: Terraform Plan
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -25,34 +29,134 @@ jobs:
         with:
           terraform_version: 1.8.5
 
+      - name: Install TFLint
+        run: |
+          curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
+      
       - name: Configure AWS credentials
+        id: configure-aws-credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: arn:aws:iam::339712743018:role/arq-oidc-gha
           aws-region: us-east-1
 
-      - name: Debug - List directory contents
-        run: ls -R
+      - name: Initialize Terraform for ecs
+        working-directory: ./examples/ecs
+        run: |
+          rm -rf .terraform
+          terraform init -upgrade -backend-config="bucket=arq-terraform-bucket" -backend-config="key=GHA/terraform.tfstate" -backend-config="region=us-east-1"
+
+      - name: Run TFLint
+        working-directory: ./examples/ecs
+        run: tflint --format=compact
+      
+      - name: Validate Terraform for ecs
+        working-directory: ./examples/ecs
+        run: terraform validate
+
+      - name: Plan Terraform for ecs
+        working-directory: ./examples/ecs
+        run: terraform plan -out=plan.tfplan
+
+      - name: Upload Terraform plan
+        uses: actions/upload-artifact@v2
+        with:
+          name: terraform-plan
+          path: ./examples/ecs/plan.tfplan
+
+      - name: Upload lock file
+        uses: actions/upload-artifact@v2
+        with:
+          name: terraform-lock
+          path: ./examples/ecs/.terraform.lock.hcl
+
+      - name: Upload .terraform directory
+        uses: actions/upload-artifact@v2
+        with:
+          name: terraform-cache
+          path: ./examples/ecs/.terraform
+
+  apply:
+    name: Terraform Apply
+    needs: [terraform]
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://github.com/your-repo/actions/runs/
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.8.5
+
+      - name: Configure AWS credentials
+        id: configure-aws-credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::339712743018:role/arq-oidc-gha
+          aws-region: us-east-1
+
+      - name: Download Terraform plan
+        uses: actions/download-artifact@v2
+        with:
+          name: terraform-plan
+          path: ./examples/ecs
+
+      - name: Download lock file
+        uses: actions/download-artifact@v2
+        with:
+          name: terraform-lock
+          path: ./examples/ecs
+
+      - name: Download .terraform directory
+        uses: actions/download-artifact@v2
+        with:
+          name: terraform-cache
+          path: ./examples/ecs/.terraform
+
+      - name: Initialize Terraform for ecs
+        working-directory: ./examples/ecs
+        run: |
+          rm -rf .terraform
+          terraform init -upgrade -backend-config="bucket=arq-terraform-bucket" -backend-config="key=GHA/terraform.tfstate" -backend-config="region=us-east-1"
+
+      - name: Install AWS provider
+        run: |
+          mkdir -p ~/.terraform.d/plugins/registry.terraform.io/hashicorp/aws/5.55.0/linux_amd64
+          curl -L -o terraform-provider-aws_5.55.0_linux_amd64.zip https://releases.hashicorp.com/terraform-provider-aws/5.55.0/terraform-provider-aws_5.55.0_linux_amd64.zip
+          unzip terraform-provider-aws_5.55.0_linux_amd64.zip -d ~/.terraform.d/plugins/registry.terraform.io/hashicorp/aws/5.55.0/linux_amd64
+          chmod +x ~/.terraform.d/plugins/registry.terraform.io/hashicorp/aws/5.55.0/linux_amd64/terraform-provider-aws_v5.55.0_x5
         working-directory: ./examples/ecs
 
-      - name: Debug - Print Terraform version
-        run: terraform version
+      - name: Verify AWS provider
+        working-directory: ./examples/ecs
+        run: |
+          ls -la ~/.terraform.d/plugins/registry.terraform.io/hashicorp/aws/5.55.0/linux_amd64/
+          file ~/.terraform.d/plugins/registry.terraform.io/hashicorp/aws/5.55.0/linux_amd64/terraform-provider-aws_v5.55.0_x5
 
-      - name: Debug - Print AWS CLI version
-        run: aws --version
+      - name: List downloaded files
+        run: ls -la ./examples/ecs
 
-      - name: Initialize Terraform
-        run: terraform init -no-color
+      - name: Ensure Terraform providers are executable
+        run: |
+          sudo chmod -R 755 .terraform
+          sudo chown -R $USER:$USER .terraform
+          find .terraform -type f -exec chmod 644 {} \;
+          find .terraform -type d -exec chmod 755 {} \;
         working-directory: ./examples/ecs
 
-      - name: Debug - List .terraform directory
-        run: ls -R .terraform
+      - name: Verify permissions
+        run: |
+          ls -la .terraform/providers/registry.terraform.io/hashicorp/aws/5.55.0/linux_amd64/
+          file .terraform/providers/registry.terraform.io/hashicorp/aws/5.55.0/linux_amd64/terraform-provider-aws_v5.55.0_x5
         working-directory: ./examples/ecs
 
-      - name: Terraform Plan
-        run: terraform plan -no-color
+      - name: Apply Terraform for ecs
         working-directory: ./examples/ecs
-
-      - name: Terraform Apply
-        run: terraform apply -auto-approve -no-color
-        working-directory: ./examples/ecs
+        run: terraform apply -auto-approve plan.tfplan
