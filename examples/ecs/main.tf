@@ -16,6 +16,7 @@ terraform {
       version = ">= 5.0" # or use a stable version if the latest has issues
     }
   }
+  required_version = ">=0.13"
 }
 
 module "ecs_cluster" {
