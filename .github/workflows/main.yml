@@ -38,7 +38,9 @@ jobs:
 
       - name: Initialize Terraform for ecs
         working-directory: ./examples/ecs
-        run: terraform init -backend-config="bucket=arq-terraform-bucket" -backend-config="key=GHA/terraform.tfstate" -backend-config="region=us-east-1"
+        run: |
+          rm -rf .terraform
+          terraform init -upgrade -backend-config="bucket=arq-terraform-bucket" -backend-config="key=GHA/terraform.tfstate" -backend-config="region=us-east-1"
 
       - name: Validate Terraform for ecs
         working-directory: ./examples/ecs
@@ -112,7 +114,23 @@ jobs:
 
       - name: Initialize Terraform for ecs
         working-directory: ./examples/ecs
-        run: terraform init -backend-config="bucket=arq-terraform-bucket" -backend-config="key=GHA/terraform.tfstate" -backend-config="region=us-east-1"
+        run: |
+          rm -rf .terraform
+          terraform init -upgrade -backend-config="bucket=arq-terraform-bucket" -backend-config="key=GHA/terraform.tfstate" -backend-config="region=us-east-1"
+
+      - name: Install AWS provider
+        run: |
+          mkdir -p ~/.terraform.d/plugins/registry.terraform.io/hashicorp/aws/5.55.0/linux_amd64
+          curl -L -o terraform-provider-aws_5.55.0_linux_amd64.zip https://releases.hashicorp.com/terraform-provider-aws/5.55.0/terraform-provider-aws_5.55.0_linux_amd64.zip
+          unzip terraform-provider-aws_5.55.0_linux_amd64.zip -d ~/.terraform.d/plugins/registry.terraform.io/hashicorp/aws/5.55.0/linux_amd64
+          chmod +x ~/.terraform.d/plugins/registry.terraform.io/hashicorp/aws/5.55.0/linux_amd64/terraform-provider-aws_v5.55.0_x5
+        working-directory: ./examples/ecs
+
+      - name: Verify AWS provider
+        working-directory: ./examples/ecs
+        run: |
+          ls -la ~/.terraform.d/plugins/registry.terraform.io/hashicorp/aws/5.55.0/linux_amd64/
+          file ~/.terraform.d/plugins/registry.terraform.io/hashicorp/aws/5.55.0/linux_amd64/terraform-provider-aws_v5.55.0_x5
 
       - name: List downloaded files
         run: ls -la ./examples/ecs
