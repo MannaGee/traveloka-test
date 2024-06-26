@@ -159,4 +159,4 @@ jobs:
 
       - name: Apply Terraform for ecs
         working-directory: ./examples/ecs
-        run: terraform apply -auto-approve plan.tfplan
+        run: terraform apply -auto-approve 
