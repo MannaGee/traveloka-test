@@ -175,11 +175,11 @@ variable "container_definitions" {
 EOF
 }
 
-variable "network_mode" {
-  description = "The Docker networking mode to use for the containers in the task"
-  type        = string
-  default     = "bridge"
-}
+# variable "network_mode" {
+#   description = "The Docker networking mode to use for the containers in the task"
+#   type        = string
+#   default     = "bridge"
+# }
 
 variable "requires_compatibilities" {
   description = "A set of launch types required by the task"
@@ -210,8 +210,8 @@ variable "task_role_arn" {
   type        = string
   default = "arn:aws:iam::339712743018:role/task-def-role-arq"
 }
-variable "managed_termination_protection" {
-  description = "Managed termination protection"
-  type        = string
-  default     = "DISABLED"
-}
+# variable "managed_termination_protection" {
+#   description = "Managed termination protection"
+#   type        = string
+#   default     = "DISABLED"
+# }
