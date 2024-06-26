@@ -18,13 +18,13 @@ variable "security_groups" {
 variable "ec2_ami_id" {
   description = "AMI ID for the EC2 instances"
   type        = string
-  default = "ami-0c55b159cbfafe1f0"
+  default = "ami-01b799c439fd5516a"
 }
 
 variable "instance_type" {
   description = "Instance type for the EC2 instances"
   type        = string
-  default = "t3.micro"
+  default = "t2.micro"
 }
 
 variable "key_name" {
