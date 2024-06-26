@@ -12,7 +12,7 @@ variable "use_ec2" {
 variable "security_groups" {
   description = "List of security group IDs for the ASG"
   type        = list(string)
-  default = [ "sg-0175633b9f5769284", "sg-0de63c3aff5174878" ]
+  default = [ "sg-0175633b9f5769284" ]
 }
 
 variable "ec2_ami_id" {
