@@ -62,9 +62,26 @@ jobs:
           name: terraform-lock
           path: ./examples/ecs/.terraform.lock.hcl
 
+      - name: Upload .terraform directory
+        uses: actions/upload-artifact@v2
+        with:
+          name: terraform-cache
+          path: ./examples/ecs/.terraform
+
+  approval:
+    name: Request Approval
+    runs-on: ubuntu-latest
+    needs: [terraform]
+    environment:
+      name: production
+      url: https://github.com/your-repo/actions/runs/
+    steps:
+      - name: Approval required
+        run: exit 1
+
   apply:
     name: Terraform Apply
-    needs: [terraform]
+    needs: [terraform, approval]
     runs-on: ubuntu-latest
 
     permissions:
@@ -98,6 +115,16 @@ jobs:
         with:
           name: terraform-lock
           path: ./examples/ecs
+
+      - name: Download .terraform directory
+        uses: actions/download-artifact@v2
+        with:
+          name: terraform-cache
+          path: ./examples/ecs/.terraform
+
+      - name: Initialize Terraform for ecs
+        working-directory: ./examples/ecs
+        run: terraform init -backend-config="bucket=arq-terraform-bucket" -backend-config="key=GHA/terraform.tfstate" -backend-config="region=us-east-1"
 
       - name: List downloaded files
         run: ls -la ./examples/ecs
