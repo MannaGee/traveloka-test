@@ -13,10 +13,10 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = ">= 5.55.0" # or use a stable version if the latest has issues
+      version = ">= 4.67" # or use a stable version if the latest has issues
     }
   }
-  required_version = ">=0.13"
+  required_version = ">=0.14.9"
 }
 
 module "ecs_cluster" {
