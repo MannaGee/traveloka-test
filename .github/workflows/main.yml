@@ -17,11 +17,9 @@ jobs:
   terraform:
     name: Terraform Plan
     runs-on: ubuntu-latest
-
     permissions:
       id-token: write
       contents: read
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -75,11 +73,9 @@ jobs:
     environment:
       name: production
       url: https://github.com/your-repo/actions/runs/
-
     permissions:
       id-token: write
       contents: read
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -122,7 +118,18 @@ jobs:
         run: ls -la ./examples/ecs
 
       - name: Ensure Terraform providers are executable
-        run: chmod -R +x .terraform/providers/
+        run: |
+          sudo chmod -R 755 .terraform
+          sudo chown -R $USER:$USER .terraform
+          find .terraform -type f -exec chmod 644 {} \;
+          find .terraform -type d -exec chmod 755 {} \;
+        working-directory: ./examples/ecs
+
+      - name: Verify permissions
+        run: |
+          ls -la .terraform/providers/registry.terraform.io/hashicorp/aws/5.55.0/linux_amd64/
+          file .terraform/providers/registry.terraform.io/hashicorp/aws/5.55.0/linux_amd64/terraform-provider-aws_v5.55.0_x5
+        working-directory: ./examples/ecs
 
       - name: Apply Terraform for ecs
         working-directory: ./examples/ecs
