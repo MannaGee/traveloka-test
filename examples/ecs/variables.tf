@@ -18,7 +18,7 @@ variable "security_groups" {
 variable "ec2_ami_id" {
   description = "AMI ID for the EC2 instances"
   type        = string
-  default = "ami-0e879a1b306fffb22"
+  default = "ami-0c55b159cbfafe1f0"
 }
 
 variable "instance_type" {
