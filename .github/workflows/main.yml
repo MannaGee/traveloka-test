@@ -32,7 +32,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: 1.8.5
+          terraform_version: 1.7.3
 
       - name: Install TFLint
         run: |
@@ -49,6 +49,7 @@ jobs:
         working-directory: ./examples/ecs
         run: |
           rm -rf .terraform
+          rm -rf .terraform.lock.hcl
           terraform init -upgrade -backend-config="bucket=arq-terraform-bucket" -backend-config="key=GHA/terraform.tfstate" -backend-config="region=us-east-1"
 
       - name: Run TFLint
@@ -134,6 +135,7 @@ jobs:
         working-directory: ./examples/ecs
         run: |
           rm -rf .terraform
+          rm -rf .terraform.lock.hcl
           terraform init -upgrade -backend-config="bucket=arq-terraform-bucket" -backend-config="key=GHA/terraform.tfstate" -backend-config="region=us-east-1"
 
       - name: Install AWS provider
