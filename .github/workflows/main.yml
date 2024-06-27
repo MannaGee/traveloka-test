@@ -140,10 +140,9 @@ jobs:
       #     name: terraform-cache
       #     path: ./examples/ecs/.terraform
 
-      - name: Clear Terraform Cache
-        run: |
-          rm -rf ~/.terraform.d
-          rm -rf .terraform
+      # - name: Clear Terraform Cache
+      #   run: |
+      #     rm -rf .terraform
           
       - name: Initialize Terraform for ecs
         working-directory: ./examples/ecs
@@ -165,41 +164,41 @@ jobs:
 
       - name: Plan Terraform for ecs
         working-directory: ./examples/ecs
-        run: terraform plan 
+        run: terraform plan -out=plan.tfplan
         
-      - name: Install AWS provider
-        run: |
-          mkdir -p ~/.terraform.d/plugins/registry.terraform.io/hashicorp/aws/5.55.0/linux_amd64
-          curl -L -o terraform-provider-aws_5.55.0_linux_amd64.zip https://releases.hashicorp.com/terraform-provider-aws/5.55.0/terraform-provider-aws_5.55.0_linux_amd64.zip
-          unzip terraform-provider-aws_5.55.0_linux_amd64.zip -d ~/.terraform.d/plugins/registry.terraform.io/hashicorp/aws/5.55.0/linux_amd64
-          chmod +x ~/.terraform.d/plugins/registry.terraform.io/hashicorp/aws/5.55.0/linux_amd64/terraform-provider-aws_v5.55.0_x5
-        working-directory: ./examples/ecs
+      # - name: Install AWS provider
+      #   run: |
+      #     mkdir -p ~/.terraform.d/plugins/registry.terraform.io/hashicorp/aws/5.55.0/linux_amd64
+      #     curl -L -o terraform-provider-aws_5.55.0_linux_amd64.zip https://releases.hashicorp.com/terraform-provider-aws/5.55.0/terraform-provider-aws_5.55.0_linux_amd64.zip
+      #     unzip terraform-provider-aws_5.55.0_linux_amd64.zip -d ~/.terraform.d/plugins/registry.terraform.io/hashicorp/aws/5.55.0/linux_amd64
+      #     chmod +x ~/.terraform.d/plugins/registry.terraform.io/hashicorp/aws/5.55.0/linux_amd64/terraform-provider-aws_v5.55.0_x5
+      #   working-directory: ./examples/ecs
 
-      - name: Verify AWS provider
-        working-directory: ./examples/ecs
-        run: |
-          ls -la ~/.terraform.d/plugins/registry.terraform.io/hashicorp/aws/5.55.0/linux_amd64/
-          file ~/.terraform.d/plugins/registry.terraform.io/hashicorp/aws/5.55.0/linux_amd64/terraform-provider-aws_v5.55.0_x5
+      # - name: Verify AWS provider
+      #   working-directory: ./examples/ecs
+      #   run: |
+      #     ls -la ~/.terraform.d/plugins/registry.terraform.io/hashicorp/aws/5.55.0/linux_amd64/
+      #     file ~/.terraform.d/plugins/registry.terraform.io/hashicorp/aws/5.55.0/linux_amd64/terraform-provider-aws_v5.55.0_x5
 
-      - name: List downloaded files
-        run: ls -la ./examples/ecs
+      # - name: List downloaded files
+      #   run: ls -la ./examples/ecs
 
-      - name: Ensure Terraform providers are executable
-        run: |
-          sudo chmod -R 755 .terraform
-          sudo chown -R $USER:$USER .terraform
-          find .terraform -type f -exec chmod 644 {} \;
-          find .terraform -type d -exec chmod 755 {} \;
-        working-directory: ./examples/ecs
+      # - name: Ensure Terraform providers are executable
+      #   run: |
+      #     sudo chmod -R 755 .terraform
+      #     sudo chown -R $USER:$USER .terraform
+      #     find .terraform -type f -exec chmod 644 {} \;
+      #     find .terraform -type d -exec chmod 755 {} \;
+      #   working-directory: ./examples/ecs
 
-      - name: Verify permissions
-        run: |
-          ls -la .terraform/providers/registry.terraform.io/hashicorp/aws/5.55.0/linux_amd64/
-          file .terraform/providers/registry.terraform.io/hashicorp/aws/5.55.0/linux_amd64/terraform-provider-aws_v5.55.0_x5
-        working-directory: ./examples/ecs
+      # - name: Verify permissions
+      #   run: |
+      #     ls -la .terraform/providers/registry.terraform.io/hashicorp/aws/5.55.0/linux_amd64/
+      #     file .terraform/providers/registry.terraform.io/hashicorp/aws/5.55.0/linux_amd64/terraform-provider-aws_v5.55.0_x5
+      #   working-directory: ./examples/ecs
 
       - name: Terraform Apply
         working-directory: ./examples/ecs
-        run: terraform apply -auto-approve 
+        run: terraform apply -auto-approve "plan.tfplan"
         env:
          TF_LOG: DEBUG
