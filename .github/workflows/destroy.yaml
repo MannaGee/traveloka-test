@@ -1,0 +1,41 @@
+name: Terraform Destroy
+
+on:
+  workflow_dispatch:
+
+jobs:
+  terraform_destroy:
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+    permissions:
+      id-token: write
+      contents: read
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+          terraform_version: 1.7.3
+
+    - name: Configure AWS credentials
+      id: configure-aws-credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+          role-to-assume: arn:aws:iam::339712743018:role/arq-oidc-gha
+          aws-region: us-east-1
+          
+    - name: Initialize Terraform for ecs
+      working-directory: ./examples/ecs
+      run: |
+         rm -rf .terraform
+         rm -rf .terraform.lock.hcl
+         terraform init -upgrade 
+# -backend-config="bucket=arq-terraform-bucket" -backend-config="key=GHA/terraform.tfstate" -backend-config="region=us-east-1"
+
+    - name: Terraform Destroy
+      working-directory: ./examples/ecs
+      run: terraform destroy -auto-approve
