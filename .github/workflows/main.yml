@@ -11,6 +11,7 @@ on:
       - main
     paths:
       - 'modules/ecs/**'
+  workflow_dispatch:
   
  
 
