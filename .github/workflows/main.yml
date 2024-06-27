@@ -11,7 +11,7 @@ on:
       - main
     paths:
       - 'modules/ecs/**'
-  workflow_dispatch: 
+  
  
 
 jobs:
@@ -33,7 +33,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: 1.8.4
+          terraform_version: 1.7.3
 
       - name: Install TFLint
         run: |
@@ -59,11 +59,11 @@ jobs:
           rm -rf .terraform.lock.hcl
           terraform init -upgrade -backend-config="bucket=arq-terraform-bucket" -backend-config="key=GHA/terraform.tfstate" -backend-config="region=us-east-1"
 
-      - name: Verify Terraform setup
-        working-directory: ./examples/ecs
-        run: |
-         terraform version
-         terraform providers
+      # - name: Verify Terraform setup
+      #   working-directory: ./examples/ecs
+      #   run: |
+      #    terraform version
+      #    terraform providers
          
       - name: Run TFLint
         working-directory: ./examples/ecs
