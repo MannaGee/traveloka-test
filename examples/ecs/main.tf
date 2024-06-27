@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 terraform {
-  required_version = "~> 1.9.0"
+  required_version = "~> 1.8.5"
   backend "s3" {
     bucket         = "arq-terraform-bucket" # Replace with your S3 bucket name
     key            = "GHA/terraform.tfstate"   # Replace with the desired path to the state file within the bucket
