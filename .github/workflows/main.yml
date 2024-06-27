@@ -140,9 +140,9 @@ jobs:
       #     name: terraform-cache
       #     path: ./examples/ecs/.terraform
 
-      # - name: Clear Terraform Cache
-      #   run: |
-      #     rm -rf .terraform
+      - name: Clear Terraform Cache
+        run: |
+          rm -rf .terraform
           
       - name: Initialize Terraform for ecs
         working-directory: ./examples/ecs
@@ -200,5 +200,5 @@ jobs:
       - name: Terraform Apply
         working-directory: ./examples/ecs
         run: terraform apply -auto-approve "plan.tfplan"
-        env:
-         TF_LOG: DEBUG
+        # env:
+        #  TF_LOG: DEBUG
