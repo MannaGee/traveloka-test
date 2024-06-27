@@ -160,7 +160,7 @@ jobs:
 
       - name: Fix Permissions
         run: |
-         chmod -R +x .terraform/providers/registry.terraform.io/hashicorp/aws/5.55.0/linux_amd64/
+         find . -type f -name "terraform-provider-aws_*" -exec chmod +x {} \;
          ls -l .terraform/providers/registry.terraform.io/hashicorp/aws/5.55.0/linux_amd64/
 
       # - name: Verify Terraform setup
