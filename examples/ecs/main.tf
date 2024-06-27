@@ -3,7 +3,8 @@ provider "aws" {
 }
 
 terraform {
-   backend "s3" {
+  required_version = "~> 1.8.5"
+  backend "s3" {
     bucket         = "arq-terraform-bucket" # Replace with your S3 bucket name
     key            = "GHA/terraform.tfstate"   # Replace with the desired path to the state file within the bucket
     region         = "us-east-1"                   # Replace with your AWS region
@@ -16,7 +17,7 @@ terraform {
       version = ">= 4.67" # or use a stable version if the latest has issues
     }
   }
-  required_version = ">=0.14.9"
+  
 }
 
 module "ecs_cluster" {
