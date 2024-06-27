@@ -194,6 +194,7 @@ jobs:
         working-directory: ./examples/ecs
 
       - name: Terraform Apply
+        working-directory: ./examples/ecs
         run: terraform apply -auto-approve -input=false -no-color
         env:
          TF_LOG: DEBUG
