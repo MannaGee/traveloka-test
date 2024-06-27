@@ -4,13 +4,9 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'modules/ecs/**'
   pull_request:
     branches:
       - main
-    paths:
-      - 'modules/ecs/**'
   workflow_dispatch:
   
  
@@ -84,17 +80,17 @@ jobs:
           name: terraform-plan
           path: ./examples/ecs/plan.tfplan
 
-      - name: Upload lock file
-        uses: actions/upload-artifact@v2
-        with:
-          name: terraform-lock
-          path: ./examples/ecs/.terraform.lock.hcl
+      # - name: Upload lock file
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: terraform-lock
+      #     path: ./examples/ecs/.terraform.lock.hcl
 
-      - name: Upload .terraform directory
-        uses: actions/upload-artifact@v2
-        with:
-          name: terraform-cache
-          path: ./examples/ecs/.terraform
+      # - name: Upload .terraform directory
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: terraform-cache
+      #     path: ./examples/ecs/.terraform
 
   apply:
     name: Terraform Apply
@@ -127,23 +123,23 @@ jobs:
           role-to-assume: arn:aws:iam::339712743018:role/arq-oidc-gha
           aws-region: us-east-1
 
-      - name: Download Terraform plan
-        uses: actions/download-artifact@v2
-        with:
-          name: terraform-plan
-          path: ./examples/ecs
+      # - name: Download Terraform plan
+      #   uses: actions/download-artifact@v2
+      #   with:
+      #     name: terraform-plan
+      #     path: ./examples/ecs
 
-      - name: Download lock file
-        uses: actions/download-artifact@v2
-        with:
-          name: terraform-lock
-          path: ./examples/ecs
+      # - name: Download lock file
+      #   uses: actions/download-artifact@v2
+      #   with:
+      #     name: terraform-lock
+      #     path: ./examples/ecs
 
-      - name: Download .terraform directory
-        uses: actions/download-artifact@v2
-        with:
-          name: terraform-cache
-          path: ./examples/ecs/.terraform
+      # - name: Download .terraform directory
+      #   uses: actions/download-artifact@v2
+      #   with:
+      #     name: terraform-cache
+      #     path: ./examples/ecs/.terraform
 
       - name: Clear Terraform Cache
         run: |
@@ -167,7 +163,11 @@ jobs:
       #   run: |
       #    terraform version
       #    terraform providers
-         
+
+      - name: Plan Terraform for ecs
+        working-directory: ./examples/ecs
+        run: terraform plan 
+        
       - name: Install AWS provider
         run: |
           mkdir -p ~/.terraform.d/plugins/registry.terraform.io/hashicorp/aws/5.55.0/linux_amd64
@@ -201,6 +201,6 @@ jobs:
 
       - name: Terraform Apply
         working-directory: ./examples/ecs
-        run: terraform apply -auto-approve -input=false -no-color
+        run: terraform apply -auto-approve 
         env:
          TF_LOG: DEBUG
